@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # Constants
-# general_packages="lsb-core" ; # not necessary
-general_packages="lsb-core" ;
+# general_packages="git lsb-core" ; # not necessary
+general_packages="git" ;
 ubuntu_packages='' ;
 centos_packages='' ;
 
@@ -41,7 +41,26 @@ execute() {
 getOsNickname() {
   lsb_release -c | awk '{print $NF}'
 }
-idemYumInstalls() {
+hasAptPkg() {
+  local pkg=$1 ;
+  local x=`apt list --installed 2>/dev/null | egrep -v '^Listing[.][.][.]' | egrep -oh '^[a-zA-Z][a-zA-Z0-9_\-]*[^a-zA-Z0-9_\-]' | sed -e 's/[^a-zA-Z0-9_\-]$//' | perl -ne "/^\\Q$pkg\\E/ && print \$_" ` ;
+  local x=`dpkg --get-selections | egrep -v $'\tdeinstall$' | egrep -oh $'^[^ \t]*' | perl -ne "/^\\Q$pkg\\E/ && print \$_" ` ;
+  echo "$x" ;
+}
+idemGemInstall() {
+  local pkg=$1 ; shift ;
+  local pkgBase=`basename "$pkg"` ;
+  local x=`gem list | perl -ne "m{^\\Q$pkgBase\\E(\\s|\$)} && print \$_" ` ;
+  if [[ -z $x ]] ; then
+    execute gem install --user-install "$pkg" "$@" ;
+  fi ;
+}
+idemAptInstall() {
+  local pkg=$1 ;
+  local x=$(hasAptPkg $pkg) ;
+  [[ $x ]] || execute sudo apt-get -y install "$pkg" ;
+}
+idemAptInstalls() {
   local pkg='' ;
   for pkg in "$@" ; do
     execute idemAptInstall "$pkg" ;
@@ -50,22 +69,11 @@ idemYumInstalls() {
 idemYumInstall() {
   false ; # todo
 }
-idemAptInstalls() {
+idemYumInstalls() {
   local pkg='' ;
   for pkg in "$@" ; do
     execute idemAptInstall "$pkg" ;
   done ;
-}
-hasAptPkg() {
-  local pkg=$1 ;
-  local x=`apt list --installed 2>/dev/null | egrep -v '^Listing[.][.][.]' | egrep -oh '^[a-zA-Z][a-zA-Z0-9_\-]*[^a-zA-Z0-9_\-]' | sed -e 's/[^a-zA-Z0-9_\-]$//' | perl -ne "/^\\Q$pkg\\E/ && print \$_" ` ;
-  local x=`dpkg --get-selections | egrep -v $'\tdeinstall$' | egrep -oh $'^[^ \t]*' | perl -ne "/^\\Q$pkg\\E/ && print \$_" ` ;
-  echo "$x" ;
-}
-idemAptInstall() {
-  local pkg=$1 ;
-  local x=$(hasAptPkg $pkg) ;
-  [[ $x ]] || execute sudo apt-get -y install "$pkg" ;
 }
 
 cd $(dirname $0) || { echo "ERROR with cd(dirname(\$0 = $0) = $(dirname $0)): '$?'." ; exit 1 ; } ;
