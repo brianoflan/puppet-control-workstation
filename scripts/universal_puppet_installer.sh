@@ -20,7 +20,7 @@ main() {
     local hasAptPkg=$(hasAptPkg puppet-agent) ;
     if [[ -z $hasAptPkg ]] ; then
       local osnickname=$(getOsNickname) ;
-      local puppet_deb=https://apt.puppetlabs.com/puppetlabs-release-pc1-xenial.deb
+      local puppet_deb=puppetlabs-release-pc1-xenial.deb
       local tmpd=`mktemp -d "${TMPDIR:-/tmp}/tmp.d.XXXXXXXXXX"` ;
       ( cd $tmpd && wget "$puppet_apt_url/$puppet_deb" && sudo dpkg -i $puppet_deb && sudo apt-get -y install puppet-agent ; ) ;
     fi ;
