@@ -9,7 +9,8 @@ class profile::linux_workstation (
   if $os_specific_packages {
     case $::osfamily {
       'Debian': {
-        package { ['g++', 'ruby-dev', 'lsb-core', ]:
+        # package { ['g++', 'ruby-dev', 'lsb-core', ]:
+        package { ['g++', 'ruby-dev', ]:
           ensure => installed,
         }
         case $::operatingsystem {
