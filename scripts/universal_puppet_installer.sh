@@ -1,9 +1,12 @@
 #!/bin/bash
 
 # Constants
+# general_packages="lsb-core" ; # not necessary
 general_packages="lsb-core" ;
 ubuntu_packages='' ;
 centos_packages='' ;
+
+puppet_apt_url='https://apt.puppetlabs.com'
 
 # Derived from system
 is_centos=`uname -a | egrep -i '(centos|redhat|rhel)' | egrep -i linux` ;
@@ -14,8 +17,14 @@ is_ubuntu=`uname -a | egrep -i ubuntu | egrep -i linux` ;
 main() {
   if [[ $is_ubuntu ]] ; then
     idemAptInstalls $general_packages $ubuntu_packages ;
-    local osnickname=`lsb_release -a` ;
-    echo "osnickname = $osnickname" ;
+    local hasAptPkg=$(hasAptPkg puppet-agent) ;
+    if [[ -z $hasAptPkg ]] ; then
+      local osnickname=$(getOsNickname) ;
+      local puppet_deb=https://apt.puppetlabs.com/puppetlabs-release-pc1-xenial.deb
+      local tmpd=`mktemp -d "${TMPDIR:-/tmp}/tmp.d.XXXXXXXXXX"` ;
+      ( cd $tmpd && wget "$puppet_apt_url/$puppet_deb" && sudo dpkg -i $puppet_deb && sudo apt-get -y install puppet-agent ; ) ;
+    fi ;
+    idemGemInstall puppet ;
   else
     if [[ $is_centos ]] ; then
       idemYumInstalls $general_packages $centos_packages ;
@@ -28,6 +37,9 @@ main() {
 execute() {
   local cmd="$@" ;
   "$@" || { echo "ERROR with execute($cmd): '$?'." ; exit 1 ; } ;
+}
+getOsNickname() {
+  lsb_release -c | awk '{print $NF}'
 }
 idemYumInstalls() {
   local pkg='' ;
@@ -44,10 +56,15 @@ idemAptInstalls() {
     execute idemAptInstall "$pkg" ;
   done ;
 }
-idemAptInstall() {
+hasAptPkg() {
   local pkg=$1 ;
   local x=`apt list --installed 2>/dev/null | egrep -v '^Listing[.][.][.]' | egrep -oh '^[a-zA-Z][a-zA-Z0-9_\-]*[^a-zA-Z0-9_\-]' | sed -e 's/[^a-zA-Z0-9_\-]$//' | perl -ne "/^\\Q$pkg\\E/ && print \$_" ` ;
   local x=`dpkg --get-selections | egrep -v $'\tdeinstall$' | egrep -oh $'^[^ \t]*' | perl -ne "/^\\Q$pkg\\E/ && print \$_" ` ;
+  echo "$x" ;
+}
+idemAptInstall() {
+  local pkg=$1 ;
+  local x=$(hasAptPkg $pkg) ;
   [[ $x ]] || execute sudo apt-get -y install "$pkg" ;
 }
 
