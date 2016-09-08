@@ -1,0 +1,10 @@
+FORGE
+  remote: https://forgeapi.puppetlabs.com
+  specs:
+    puppetlabs-stdlib (4.12.0)
+    unibet-vagrant (0.2.1)
+      puppetlabs-stdlib (>= 0)
+
+DEPENDENCIES
+  unibet-vagrant (>= 0)
+

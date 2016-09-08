@@ -1,0 +1,18 @@
+# # # This file is used by 'rake spec' thanks to "require 'puppetlabs_spec_helper/rake_tasks'" and https://github.com/puppetlabs/puppetlabs_spec_helper#using-fixtures'
+---
+fixtures:
+  repositories:
+    # somemodule:
+    #   repo: https://some.url/
+    #   ref: some_branch_tag_or_commit_hash
+  forge_modules:
+    vagrant:
+      repo: unibet-vagrant
+      ref: 0.2.1
+    # somemodule
+    #   repo: some-forgename
+    #   ref: some.version.number
+  symlinks:
+    profile: "#{source_dir}/site/profile"
+    role: "#{source_dir}/site/role"
+    # glue: "#{source_dir}/site/glue"
