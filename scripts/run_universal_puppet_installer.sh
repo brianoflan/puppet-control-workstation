@@ -7,8 +7,9 @@ main() {
   local pwd=$(pwd) ;
   local f=universal_puppet_installer.sh
   local tmpd=`mktemp -d "${TMPDIR:-/tmp}/tmp.d.XXXXXXXXXX"` ;
-  cd $tmpd && wget "$github_url/$f" && bash $f ;
+  cd $tmpd && wget --no-cache "$github_url/$f" && bash $f ;
   cd $pwd ;
+  echo "tmpd $tmpd" ;
   rm -rf $tmpd ;
 }
 
