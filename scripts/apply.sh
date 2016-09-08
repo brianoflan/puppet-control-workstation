@@ -20,8 +20,8 @@ main() {
   execute librarian-puppet install ;
   echo ;
   
-  echo "puppet apply"
-  puppet_apply ;
+  echo "puppet apply($@)"
+  puppet_apply "$@" ;
   echo ;
 }
 puppet_apply() {
