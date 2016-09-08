@@ -2,6 +2,9 @@
 ---
 fixtures:
   repositories:
+    google_chrome:
+      repo: http://github.com/BrianFlannery/puppet-google-chrome.git
+      ref: master
     # somemodule:
     #   repo: https://some.url/
     #   ref: some_branch_tag_or_commit_hash
@@ -9,6 +12,12 @@ fixtures:
     vagrant:
       repo: unibet-vagrant
       ref: 0.2.1
+    virtualbox:
+      repo: danzilio-virtualbox
+      ref: 1.7.1
+    # google_chrome:
+    #   repo: jamesnetherton-google_chrome
+    #   ref: 0.2.3
     # somemodule
     #   repo: some-forgename
     #   ref: some.version.number
