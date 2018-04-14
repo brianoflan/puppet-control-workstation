@@ -11,3 +11,5 @@ gem 'beaker-rspec', '>=5.3'
 gem 'hiera-eyaml', '>= 2.0.0'
 gem 'rspec-puppet', '~> 2.4.0'
 gem 'librarian-puppet'
+gem 'nokogiri', '~> 1.8.2'
+
